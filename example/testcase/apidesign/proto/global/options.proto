@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package global;
+
+option go_package = "github.com/paleviews/hapi/example/testcase/apidesign/golang/global";
+
+import "hapi/annotations/annotations.proto";
+
+option (hapi.annotations.global_options) = {
+  response_code_in: RESPONSE_CODE_LOCATION_HEADER;
+  auth_kind: AUTH_KIND_BEARER_IN_HEADER;
+  info: {
+    title: "todo demo",
+    version: "v0.0.1",
+  }
+  servers: [
+    {url: "http://127.0.0.1:8080"}
+  ]
+};

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package todo;
+
+option go_package = "github.com/paleviews/hapi/example/todo/apidesign/golang/todo";
+
+message Todo {
+  // 分配的 ID
+  int64 ID = 1;
+  string title = 2;
+  string detail = 3;
+  map<string, string> labels = 4;
+  // 完成程度，取值范围 [0, 100]
+  int32 completeness = 5;
+  int64 created_time = 6;
+  int64 completed_time = 7;
+}

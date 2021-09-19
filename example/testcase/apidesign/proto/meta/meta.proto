@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package meta;
+
+import "google/protobuf/descriptor.proto";
+import "hapi/annotations/annotations.proto";
+import "codes/response_code.proto";
+
+option go_package = "github.com/paleviews/hapi/example/testcase/apidesign/golang/meta";
+
+extend google.protobuf.MethodOptions {
+  repeated codes.ResponseCode response_codes = 32638998 [(hapi.annotations.method_extension_response_codes) = true];
+}

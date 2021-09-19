@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package todo;
+
+option go_package = "github.com/paleviews/hapi/example/todo/apidesign/golang/todo";
+
+import "common/empty.proto";
+import "todo/model.proto";
+import "meta/meta.proto";
+import "hapi/annotations/annotations.proto";
+
+service V1 {
+  rpc Create(CreateRequest) returns (CreateResponse) {
+    option (hapi.annotations.method) = {
+      post: "/todo/v1";
+    };
+    option (meta.response_codes) = RESPONSE_CODE_OK;
+    option (meta.response_codes) = RESPONSE_CODE_UNAUTHENTICATED;
+  }
+
+  rpc Get(GetRequest) returns (todo.Todo) {
+    option (hapi.annotations.method) = {
+      get: "/todo/v1/{ID}";
+      skip_auth: true;
+    };
+    option (meta.response_codes) = RESPONSE_CODE_OK;
+    option (meta.response_codes) = RESPONSE_CODE_NOT_FOUND;
+  }
+
+  rpc List(ListRequest) returns (ListResponse) {
+    option (hapi.annotations.method) = {
+      get: "/todo/v1"
+    };
+    option (meta.response_codes) = RESPONSE_CODE_OK;
+    option (meta.response_codes) = RESPONSE_CODE_UNAUTHENTICATED;
+  }
+
+  rpc Update(todo.Todo) returns (common.Empty) {
+    option (hapi.annotations.method) = {
+      put: "/todo/v1/{ID}"
+    };
+    option (meta.response_codes) = RESPONSE_CODE_OK;
+    option (meta.response_codes) = RESPONSE_CODE_NOT_FOUND;
+    option (meta.response_codes) = RESPONSE_CODE_UNAUTHENTICATED;
+  }
+
+  rpc Delete(DeleteRequest) returns (common.Empty) {
+    option (hapi.annotations.method) = {
+      delete: "/todo/v1/{ID}"
+    };
+    option (meta.response_codes) = RESPONSE_CODE_OK;
+    option (meta.response_codes) = RESPONSE_CODE_NOT_FOUND;
+    option (meta.response_codes) = RESPONSE_CODE_UNAUTHENTICATED;
+  }
+}
+
+message CreateRequest {
+  string title = 1;
+  string detail = 2;
+}
+
+message CreateResponse {
+  int64 ID = 1;
+}
+
+message GetRequest {
+  int64 ID = 1;
+}
+
+message ListRequest {
+  string title_contains = 1;
+  string detail_contains = 2;
+  // start from 0
+  int64 page = 3;
+  int64 page_size = 4;
+}
+
+message ListResponse {
+  int64 total = 1;
+  repeated todo.Todo list = 2;
+}
+
+message DeleteRequest {
+  int64 ID = 1;
+  bool soft_delete = 2;
+}

@@ -1,0 +1,288 @@
+openapi: "3.0.3"
+info:
+  version: v0.0.1
+  title: todo demo
+servers:
+  - url: http://127.0.0.1:8080
+paths:
+  /todo/v1:
+    post:
+      operationId: todo.V1.Create
+      security:
+        - bearerInHeader: []
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                detail:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  code:
+                    description: |
+                      response code enums:\
+                      .. 0: ok\
+                      .... just ok\
+                      .. 2: unauthenticated
+                    type: integer
+                    format: int32
+                    enum:
+                      - 0 # ok
+                      - 2 # unauthenticated
+                  message:
+                    type: string
+                    enum:
+                      - 'ok' # 0
+                      - 'unauthenticated' # 2
+                  data:
+                    type: object
+                    properties:
+                      ID:
+                        type: integer
+                        format: int64
+    get:
+      operationId: todo.V1.List
+      security:
+        - bearerInHeader: []
+      parameters:
+        - name: title_contains
+          in: query
+          schema:
+            type: string
+        - name: detail_contains
+          in: query
+          schema:
+            type: string
+        - name: page
+          description: start from 0
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  code:
+                    description: |
+                      response code enums:\
+                      .. 0: ok\
+                      .... just ok\
+                      .. 2: unauthenticated
+                    type: integer
+                    format: int32
+                    enum:
+                      - 0 # ok
+                      - 2 # unauthenticated
+                  message:
+                    type: string
+                    enum:
+                      - 'ok' # 0
+                      - 'unauthenticated' # 2
+                  data:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        format: int64
+                      list:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/todo.Todo'
+  /todo/v1/{ID}:
+    get:
+      operationId: todo.V1.Get
+      parameters:
+        - name: ID
+          required: true
+          in: path
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  code:
+                    description: |
+                      response code enums:\
+                      .. 0: ok\
+                      .... just ok\
+                      .. 1001: not_found
+                    type: integer
+                    format: int32
+                    enum:
+                      - 0 # ok
+                      - 1001 # not_found
+                  message:
+                    type: string
+                    enum:
+                      - 'ok' # 0
+                      - 'not_found' # 1001
+                  data:
+                    $ref: '#/components/schemas/todo.Todo'
+    put:
+      operationId: todo.V1.Update
+      security:
+        - bearerInHeader: []
+      parameters:
+        - name: ID
+          description: 分配的 ID
+          required: true
+          in: path
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                detail:
+                  type: string
+                labels:
+                  type: object
+                  additionalProperties:
+                    type: string
+                completeness:
+                  description: 完成程度，取值范围 [0, 100]
+                  type: integer
+                  format: int32
+                created_time:
+                  type: integer
+                  format: int64
+                completed_time:
+                  type: integer
+                  format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  code:
+                    description: |
+                      response code enums:\
+                      .. 0: ok\
+                      .... just ok\
+                      .. 1001: not_found\
+                      .. 2: unauthenticated
+                    type: integer
+                    format: int32
+                    enum:
+                      - 0 # ok
+                      - 1001 # not_found
+                      - 2 # unauthenticated
+                  message:
+                    type: string
+                    enum:
+                      - 'ok' # 0
+                      - 'not_found' # 1001
+                      - 'unauthenticated' # 2
+                  data:
+                    $ref: '#/components/schemas/common.Empty'
+    delete:
+      operationId: todo.V1.Delete
+      security:
+        - bearerInHeader: []
+      parameters:
+        - name: ID
+          required: true
+          in: path
+          schema:
+            type: integer
+            format: int64
+        - name: soft_delete
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  code:
+                    description: |
+                      response code enums:\
+                      .. 0: ok\
+                      .... just ok\
+                      .. 1001: not_found\
+                      .. 2: unauthenticated
+                    type: integer
+                    format: int32
+                    enum:
+                      - 0 # ok
+                      - 1001 # not_found
+                      - 2 # unauthenticated
+                  message:
+                    type: string
+                    enum:
+                      - 'ok' # 0
+                      - 'not_found' # 1001
+                      - 'unauthenticated' # 2
+                  data:
+                    $ref: '#/components/schemas/common.Empty'
+components:
+  securitySchemes:
+    bearerInHeader:
+      type: http
+      scheme: bearer
+  schemas:
+    todo.Todo:
+      type: object
+      properties:
+        ID:
+          description: 分配的 ID
+          type: integer
+          format: int64
+        title:
+          type: string
+        detail:
+          type: string
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+        completeness:
+          description: 完成程度，取值范围 [0, 100]
+          type: integer
+          format: int32
+        created_time:
+          type: integer
+          format: int64
+        completed_time:
+          type: integer
+          format: int64
+    common.Empty:
+      type: object

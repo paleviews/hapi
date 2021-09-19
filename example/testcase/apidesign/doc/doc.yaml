@@ -1,0 +1,414 @@
+openapi: "3.0.3"
+info:
+  version: v0.0.1
+  title: todo demo
+servers:
+  - url: http://127.0.0.1:8080
+paths:
+  /testcase/v1/{uuid}:
+    get:
+      description: DeepQuery rpc comment
+      operationId: testcase.V1.DeepQuery
+      security:
+        - bearerInHeader: []
+      parameters:
+        - name: uuid
+          description: uuid field comment
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: string_to_int64
+          in: query
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  format: int64
+        - name: string_to_obj
+          description: string_to_obj field comment on map
+          in: query
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/testcase.DeepQueryRequest.Obj'
+        - name: objs_array
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/testcase.DeepQueryRequest.Obj'
+        - name: obj
+          in: query
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/testcase.DeepQueryRequest.Obj'
+        - name: is_marked
+          in: query
+          schema:
+            type: boolean
+        - name: ref_once
+          description: ref_once is ref_once
+          in: query
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/testcase.DeepQueryRequest.RefOnce'
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Hapi-Code:
+              schema:
+                type: integer
+                format: int32
+            X-Hapi-Message:
+              schema:
+                type: string
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  ref_once:
+                    description: ref_once in response
+                    type: object
+                    properties:
+                      id:
+                        description: id is id
+                        type: string
+                      num:
+                        description: num is num
+                        type: integer
+                        format: int32
+                  bs:
+                    description: bs is bs
+                    type: string
+                    format: byte
+                  direction:
+                    description: |
+                      direction line 1\
+                      line 2\
+                      line 3\
+                      \
+                      . testcase.DeepQueryResponse.Direction:\
+                      ... enum out\
+                      ... enums:\
+                      ..... 0: DIRECTION_UNKNOWN | one line enum\
+                      ..... 1: EAST\
+                      ..... 2: WEST\
+                      ..... 3: SOUTH\
+                      ....... multiple lines 1\
+                      ....... multiple lines 2\
+                      ....... multiple lines 3\
+                      ..... 4: NORTH
+                    type: integer
+                    format: int32
+                    enum:
+                      - 0 # DIRECTION_UNKNOWN: one line enum
+                      - 1 # EAST
+                      - 2 # WEST
+                      # SOUTH:
+                      #   multiple lines 1
+                      #   multiple lines 2
+                      #   multiple lines 3
+                      - 3
+                      - 4 # NORTH
+    delete:
+      operationId: testcase.V1.FormDecode
+      security:
+        - bearerInHeader: []
+      parameters:
+        - name: uuid
+          description: |
+            . testcase.FormDecodeRequest.UUID:\
+            ... enums:\
+            ..... 0: UUID_SHORT\
+            ..... 1: UUID_MEDIUM\
+            ..... 2: UUID_LONG
+          required: true
+          in: path
+          schema:
+            type: integer
+            format: int32
+            enum:
+              - 0 # UUID_SHORT
+              - 1 # UUID_MEDIUM
+              - 2 # UUID_LONG
+        - name: bool_field
+          in: query
+          schema:
+            type: boolean
+        - name: int32_field
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: int64_field
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: uint32_field
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: uint64_field
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: float32_field
+          in: query
+          schema:
+            type: number
+            format: float
+        - name: float64_field
+          in: query
+          schema:
+            type: number
+            format: double
+        - name: string_field
+          in: query
+          schema:
+            type: string
+        - name: bytes_field
+          in: query
+          schema:
+            type: string
+            format: byte
+        - name: enum_field
+          description: |
+            . testcase.FormDecodeRequest.UUID:\
+            ... enums:\
+            ..... 0: UUID_SHORT\
+            ..... 1: UUID_MEDIUM\
+            ..... 2: UUID_LONG
+          in: query
+          schema:
+            type: integer
+            format: int32
+            enum:
+              - 0 # UUID_SHORT
+              - 1 # UUID_MEDIUM
+              - 2 # UUID_LONG
+        - name: message_field
+          in: query
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/testcase.FormDecodeRequest.Nested'
+        - name: simple_map
+          in: query
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  format: int64
+        - name: not_simple_map
+          in: query
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/testcase.FormDecodeRequest.Nested'
+        - name: bool_array
+          in: query
+          schema:
+            type: array
+            items:
+              type: boolean
+        - name: int32_array
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int32
+        - name: int64_array
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int64
+        - name: uint32_array
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int32
+        - name: uint64_array
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int64
+        - name: float32_array
+          in: query
+          schema:
+            type: array
+            items:
+              type: number
+              format: float
+        - name: float64_array
+          in: query
+          schema:
+            type: array
+            items:
+              type: number
+              format: double
+        - name: string_array
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: bytes_array
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: byte
+        - name: enum_array
+          description: |
+            . testcase.FormDecodeRequest.UUID:\
+            ... enums:\
+            ..... 0: UUID_SHORT\
+            ..... 1: UUID_MEDIUM\
+            ..... 2: UUID_LONG
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int32
+              enum:
+                - 0 # UUID_SHORT
+                - 1 # UUID_MEDIUM
+                - 2 # UUID_LONG
+        - name: message_array
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/testcase.FormDecodeRequest.Nested'
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Hapi-Code:
+              schema:
+                type: integer
+                format: int32
+            X-Hapi-Message:
+              schema:
+                type: string
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/common.Empty'
+  /testcase/v2:
+    put:
+      operationId: testcase.V2.CodeInHeaders
+      security:
+        - bearerInHeader: []
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Hapi-Code:
+              description: |
+                response code enums:\
+                .. 0: ok\
+                .... just ok\
+                .. 99: server_error
+              schema:
+                type: integer
+                format: int32
+                enum:
+                  - 0 # ok
+                  - 99 # server_error
+            X-Hapi-Message:
+              schema:
+                type: string
+                enum:
+                  - 'ok' # 0
+                  - 'server_error' # 99
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/common.Empty'
+components:
+  securitySchemes:
+    bearerInHeader:
+      type: http
+      scheme: bearer
+  schemas:
+    testcase.DeepQueryRequest.RefOnce:
+      type: object
+      properties:
+        id:
+          description: id is id
+          type: string
+        num:
+          description: num is num
+          type: integer
+          format: int32
+    testcase.DeepQueryRequest:
+      description: DeepQueryRequest message comment
+      type: object
+      properties:
+        uuid:
+          description: uuid field comment
+          type: string
+        string_to_int64:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+        string_to_obj:
+          description: string_to_obj field comment on map
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/testcase.DeepQueryRequest.Obj'
+        objs_array:
+          type: array
+          items:
+            $ref: '#/components/schemas/testcase.DeepQueryRequest.Obj'
+        obj:
+          $ref: '#/components/schemas/testcase.DeepQueryRequest.Obj'
+        is_marked:
+          type: boolean
+        ref_once:
+          $ref: '#/components/schemas/testcase.DeepQueryRequest.RefOnce'
+    testcase.DeepQueryRequest.Obj:
+      description: Obj nested message comment
+      type: object
+      properties:
+        parent:
+          $ref: '#/components/schemas/testcase.DeepQueryRequest'
+        ratio:
+          type: number
+          format: double
+    testcase.FormDecodeRequest.Nested:
+      type: object
+      properties:
+        hello:
+          type: string
+        world:
+          type: boolean
+    common.Empty:
+      type: object

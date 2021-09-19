@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package hapi.annotations;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/paleviews/hapi/descriptor/annotations";
+
+// global options
+
+enum ResponseCodeLocation {
+  RESPONSE_CODE_LOCATION_BODY = 0; // default
+  RESPONSE_CODE_LOCATION_HEADER = 1;
+}
+
+enum AuthKind {
+  AUTH_KIND_NONE = 0; // default
+  AUTH_KIND_BEARER_IN_HEADER = 1;
+}
+
+message GlobalOptions {
+  ResponseCodeLocation response_code_in = 1;
+  AuthKind auth_kind = 2;
+  message Info {
+    string version = 1;
+    string title = 2;
+  }
+  Info info = 3;
+  message Server {
+    string url = 1;
+  }
+  repeated Server servers = 4;
+}
+
+extend google.protobuf.FileOptions {
+  GlobalOptions global_options = 71620996;
+}
+
+// method options
+
+message MethodOptions {
+  oneof route {
+    string get = 1;
+    string post = 2;
+    string delete = 3;
+    string put = 4;
+    string patch = 5;
+  }
+  bool skip_auth = 20;
+}
+
+extend google.protobuf.MethodOptions {
+  MethodOptions method = 87040365;
+}
+
+// response code options
+
+extend google.protobuf.EnumOptions {
+  bool is_type_of_response_code = 17916130;
+}
+
+message ResponseCodeValueOptions {
+  string desc = 1;
+  oneof predefined {
+    bool is_ok = 10;
+    bool is_invalid_input = 11;
+    bool is_unauthenticated = 12;
+    bool is_server_error = 13;
+  }
+}
+
+extend google.protobuf.EnumValueOptions {
+  ResponseCodeValueOptions response_code_value = 33878095;
+}
+
+extend google.protobuf.FieldOptions {
+  bool method_extension_response_codes = 43713190;
+}
