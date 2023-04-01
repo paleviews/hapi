@@ -331,6 +331,7 @@ func (cg *codeGenerator) generateServiceConstructor(svc *protogen.Service) {
 			goIdentUnauthenticatedCode, ", \n",
 			cg.getResponseCodeDescGetterIdent(), "(", goIdentUnauthenticatedCode, "), \n",
 			responseWrapperVar, ")")
+		cg.g.P("_ = ", authMiddlewareVar)
 	default:
 		panic(serviceregistry.ErrUnreachableCode)
 	}
