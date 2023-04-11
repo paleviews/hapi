@@ -205,7 +205,6 @@ func (cg *codeGenerator) generateMessage(msg *protogen.Message) {
 	}
 
 	if len(msg.Fields) != 0 {
-		cg.g.P()
 		for _, v := range msg.Fields {
 			cg.generateFieldGetter(v)
 		}
@@ -225,21 +224,24 @@ func (cg *codeGenerator) generateMessageField(f *protogen.Field) {
 func (cg *codeGenerator) generateFieldGetter(f *protogen.Field) {
 	goType := cg.fieldGoType(f)
 	zero := "nil"
-	switch f.Desc.Kind() {
-	case protoreflect.BoolKind:
-		zero = "false"
-	case protoreflect.EnumKind:
-		zero = "0" // TODO: enum zero lit
-	case protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Sfixed32Kind,
-		protoreflect.Uint32Kind, protoreflect.Fixed32Kind,
-		protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Sfixed64Kind,
-		protoreflect.Uint64Kind, protoreflect.Fixed64Kind,
-		protoreflect.FloatKind,
-		protoreflect.DoubleKind:
-		zero = "0"
-	case protoreflect.StringKind:
-		zero = `""`
+	if !f.Desc.IsMap() && !f.Desc.IsList() {
+		switch f.Desc.Kind() {
+		case protoreflect.BoolKind:
+			zero = "false"
+		case protoreflect.EnumKind:
+			zero = "0" // TODO: enum zero lit
+		case protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Sfixed32Kind,
+			protoreflect.Uint32Kind, protoreflect.Fixed32Kind,
+			protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Sfixed64Kind,
+			protoreflect.Uint64Kind, protoreflect.Fixed64Kind,
+			protoreflect.FloatKind,
+			protoreflect.DoubleKind:
+			zero = "0"
+		case protoreflect.StringKind:
+			zero = `""`
+		}
 	}
+	cg.g.P()
 	cg.g.P("func (x *", f.Parent.GoIdent, ") Get", f.GoName, "() ", goType, " {") // TODO: f.Parent could be nil
 	cg.g.P("if x != nil {")
 	cg.g.P("return x.", f.GoName)
