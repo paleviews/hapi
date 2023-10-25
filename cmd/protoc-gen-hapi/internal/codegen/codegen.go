@@ -11,20 +11,25 @@ import (
 	"github.com/paleviews/hapi/descriptor/annotations"
 )
 
-func Generate(reg *serviceregistry.Registry, plugin *protogen.Plugin, version string) {
+func Generate(reg *serviceregistry.Registry, plugin *protogen.Plugin, version string, noProtocVer bool) {
 	for _, f := range plugin.Files {
 		if f.Generate {
-			codegen(reg, plugin, f, version)
+			codegen(reg, plugin, f, version, noProtocVer)
 		}
 	}
 }
 
-func codegen(reg *serviceregistry.Registry, plugin *protogen.Plugin, file *protogen.File, version string) *protogen.GeneratedFile {
+func codegen(
+	reg *serviceregistry.Registry, plugin *protogen.Plugin, file *protogen.File,
+	version string, noProtocVer bool,
+) *protogen.GeneratedFile {
+
 	cg := &codeGenerator{
-		reg:    reg,
-		plugin: plugin,
-		file:   file,
-		g:      plugin.NewGeneratedFile(file.GeneratedFilenamePrefix+".hapi.go", file.GoImportPath),
+		reg:         reg,
+		plugin:      plugin,
+		file:        file,
+		g:           plugin.NewGeneratedFile(file.GeneratedFilenamePrefix+".hapi.go", file.GoImportPath),
+		noProtocVer: noProtocVer,
 	}
 
 	cg.generateGoFileHeader(version)
@@ -48,10 +53,11 @@ func codegen(reg *serviceregistry.Registry, plugin *protogen.Plugin, file *proto
 }
 
 type codeGenerator struct {
-	reg    *serviceregistry.Registry
-	plugin *protogen.Plugin
-	file   *protogen.File
-	g      *protogen.GeneratedFile
+	reg         *serviceregistry.Registry
+	plugin      *protogen.Plugin
+	file        *protogen.File
+	g           *protogen.GeneratedFile
+	noProtocVer bool
 }
 
 func (cg *codeGenerator) generateGoFileHeader(version string) {
@@ -65,7 +71,9 @@ func (cg *codeGenerator) generateGoFileHeader(version string) {
 		}
 	}
 	cg.g.P("// - protoc-gen-hapi ", version)
-	cg.g.P("// - protoc          ", protocVersion)
+	if !cg.noProtocVer {
+		cg.g.P("// - protoc          ", protocVersion)
+	}
 	if cg.file.Proto.GetOptions().GetDeprecated() {
 		cg.g.P("// ", cg.file.Desc.Path(), " is a deprecated file.")
 	} else {

@@ -26,6 +26,7 @@ func main() {
 
 	var flags flag.FlagSet
 	docPath := flags.String("doc_file", "", "file path of doc")
+	noProtocVer := flags.Bool("no_protoc_version", false, "don't generate protoc version in go files")
 	protogen.Options{
 		ParamFunc: flags.Set,
 	}.Run(func(gen *protogen.Plugin) error {
@@ -54,7 +55,7 @@ func main() {
 			return err
 		}
 
-		codegen.Generate(reg, gen, version)
+		codegen.Generate(reg, gen, version, *noProtocVer)
 		return nil
 	})
 }
