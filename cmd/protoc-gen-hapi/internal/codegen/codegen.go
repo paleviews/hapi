@@ -281,7 +281,12 @@ func (cg *codeGenerator) fieldGoType(field *protogen.Field) (goType string) {
 	case protoreflect.BytesKind:
 		goType = "[]byte"
 	case protoreflect.MessageKind, protoreflect.GroupKind:
-		goType = "*" + cg.g.QualifiedGoIdent(field.Message.GoIdent)
+		if field.Message.GoIdent.GoName == "Any" &&
+			field.Message.GoIdent.GoImportPath == "github.com/paleviews/hapi/descriptor/types" {
+			goType = cg.g.QualifiedGoIdent(field.Message.GoIdent)
+		} else {
+			goType = "*" + cg.g.QualifiedGoIdent(field.Message.GoIdent)
+		}
 	}
 	switch {
 	case field.Desc.IsList():
