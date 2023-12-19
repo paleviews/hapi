@@ -13,6 +13,7 @@ enum ResponseCode {
   RESPONSE_CODE_OK = 0 [(hapi.annotations.response_code_value) = {desc:"ok",is_ok:true}];
   RESPONSE_CODE_INVALID_INPUT = 1 [(hapi.annotations.response_code_value) = {desc:"invalid_input",is_invalid_input:true}];
   RESPONSE_CODE_UNAUTHENTICATED = 2 [(hapi.annotations.response_code_value) = {desc:"unauthenticated",is_unauthenticated:true}];
+  RESPONSE_CODE_NOT_FOUND = 3 [(hapi.annotations.response_code_value) = {desc:"not_found"}];
   RESPONSE_CODE_SERVER_ERROR = 99 [(hapi.annotations.response_code_value) = {desc:"server_error",is_server_error:true}];
   RESPONSE_CODE_UNIMPLEMENTED = 1001 [(hapi.annotations.response_code_value) = {desc:"unimplemented"}];
 }

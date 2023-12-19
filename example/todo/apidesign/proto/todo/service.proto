@@ -8,6 +8,7 @@ import "common/empty.proto";
 import "todo/model.proto";
 import "meta/meta.proto";
 import "hapi/annotations/annotations.proto";
+import "hapi/types/any.proto";
 
 service V1 {
   rpc Create(CreateRequest) returns (CreateResponse) {
@@ -83,4 +84,5 @@ message ListResponse {
 message DeleteRequest {
   int64 ID = 1;
   bool soft_delete = 2;
+  map<string, hapi.types.Any> more = 3;
 }

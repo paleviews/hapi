@@ -224,6 +224,14 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: more
+          in: query
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
       responses:
         '200':
           description: OK
