@@ -15,7 +15,7 @@ func NewAPIError(code ResponseCode, desc string, src error) APIError {
 type APIError struct {
 	Code        ResponseCode `json:"code"`
 	Message     string       `json:"message"`
-	SourceError error        `json:"source_error"`
+	SourceError error        `json:"source_error,omitempty"`
 }
 
 func (e APIError) Error() string {

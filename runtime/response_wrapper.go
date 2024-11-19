@@ -49,6 +49,7 @@ func (cib *codeInBodyWrapper) WriteResponse(ctx context.Context, rw http.Respons
 		respData = []byte(fmt.Sprintf(`{"code":%d,"message":"%s"}`,
 			cib.serverErrorCode, cib.serverErrorDesc))
 	}
+	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	_, err := rw.Write(respData)
 	if err != nil {
 		cib.handlerFacilitator.ErrorHook(ctx, APIError{
@@ -101,6 +102,7 @@ func (cih *codeInHeaderWrapper) WriteResponse(ctx context.Context, rw http.Respo
 		rw.Header().Set("X-Hapi-Code", strconv.FormatInt(int64(code), 10))
 		rw.Header().Set("X-Hapi-Message", msg)
 		if respData != nil {
+			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 			_, err := rw.Write(respData)
 			if err != nil {
 				cih.hf.ErrorHook(ctx, APIError{
