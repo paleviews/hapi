@@ -87,6 +87,7 @@ type operation struct {
 	responseHeaders []*header
 	response        object
 	skipAuth        bool
+	group           string
 }
 
 func (o *operation) print(p *printer.Printer) {
@@ -173,6 +174,13 @@ func (o *operation) print(p *printer.Printer) {
 	p.DecreaseIndentLevel()
 	p.DecreaseIndentLevel()
 	p.DecreaseIndentLevel()
+
+	if o.group != "" {
+		p.PrintlnWithIndents("tags:")
+		p.IncreaseIndentLevel()
+		p.PrintlnWithIndents("- ", o.group)
+		p.DecreaseIndentLevel()
+	}
 }
 
 type description []string

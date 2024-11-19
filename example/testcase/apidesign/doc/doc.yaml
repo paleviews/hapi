@@ -119,6 +119,8 @@ paths:
                       #   multiple lines 3
                       - 3
                       - 4 # NORTH
+      tags:
+        - testcase.V1
     delete:
       operationId: testcase.V1.FormDecode
       security:
@@ -320,6 +322,8 @@ paths:
             application/json; charset=utf-8:
               schema:
                 $ref: '#/components/schemas/common.Empty'
+      tags:
+        - testcase.V1
   /testcase/v2:
     put:
       operationId: testcase.V2.CodeInHeaders
@@ -351,6 +355,8 @@ paths:
             application/json; charset=utf-8:
               schema:
                 $ref: '#/components/schemas/common.Empty'
+      tags:
+        - testcase.V2
 components:
   securitySchemes:
     bearerInHeader:

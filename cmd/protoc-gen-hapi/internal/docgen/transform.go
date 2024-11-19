@@ -148,6 +148,7 @@ func (tf *transformer) transformRPC(rpc *protogen.Method) (path string, _ *opera
 		responseHeaders: responseHeaders,
 		response:        response,
 		skipAuth:        info.SkipAuth,
+		group:           string(rpc.Parent.Desc.FullName()),
 	}, nil
 }
 

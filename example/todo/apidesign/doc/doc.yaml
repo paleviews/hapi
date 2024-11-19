@@ -50,6 +50,8 @@ paths:
                       ID:
                         type: integer
                         format: int64
+      tags:
+        - todo.V1
     get:
       operationId: todo.V1.List
       security:
@@ -108,6 +110,8 @@ paths:
                         type: array
                         items:
                           $ref: '#/components/schemas/todo.Todo'
+      tags:
+        - todo.V1
   /todo/v1/{ID}:
     get:
       operationId: todo.V1.Get
@@ -144,6 +148,8 @@ paths:
                       - 'not_found' # 1001
                   data:
                     $ref: '#/components/schemas/todo.Todo'
+      tags:
+        - todo.V1
     put:
       operationId: todo.V1.Update
       security:
@@ -209,6 +215,8 @@ paths:
                       - 'unauthenticated' # 2
                   data:
                     $ref: '#/components/schemas/common.Empty'
+      tags:
+        - todo.V1
     delete:
       operationId: todo.V1.Delete
       security:
@@ -261,6 +269,8 @@ paths:
                       - 'unauthenticated' # 2
                   data:
                     $ref: '#/components/schemas/common.Empty'
+      tags:
+        - todo.V1
 components:
   securitySchemes:
     bearerInHeader:
