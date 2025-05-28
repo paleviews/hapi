@@ -139,7 +139,16 @@ func (cg *codeGenerator) getAPIErrorFromResponseCodeIdent() protogen.GoIdent {
 	}
 	i := info.OriginEnum.GoIdent
 	return i.GoImportPath.Ident("APIErrorFrom" + i.GoName)
+}
 
+func (cg *codeGenerator) getDescFromResponseCode() *protogen.GoIdent {
+	info := cg.reg.ResponseCodeInfo()
+	if info == nil {
+		return nil
+	}
+	i := info.OriginEnum.GoIdent
+	r := i.GoImportPath.Ident("DescFrom" + i.GoName)
+	return &r
 }
 
 func (cg *codeGenerator) generateEnum(e *protogen.Enum) {
@@ -198,6 +207,16 @@ func (cg *codeGenerator) generateEnum(e *protogen.Enum) {
 	cg.g.P("})")
 	cg.g.P("}")
 	cg.g.P()
+
+	if i := cg.getDescFromResponseCode(); i != nil {
+		cg.g.P("func ", *i, "(ctx ", contextPackage.Ident("Context"), ", code ", e.GoIdent, ") string {")
+		cg.g.P("if f := apiErrorFromResponseCode; f != nil {")
+		cg.g.P("return f(ctx, code, nil).Message")
+		cg.g.P("}")
+		cg.g.P("return ", cg.getResponseCodeDescGetterIdent(), "(code)")
+		cg.g.P("}")
+		cg.g.P()
+	}
 
 	cg.g.P("func ", cg.getAPIErrorFromResponseCodeIdent(), "(ctx ", contextPackage.Ident("Context"),
 		", code ", e.GoIdent, ", src error) ", hapiRuntimePackage.Ident("APIError"), " {")
@@ -402,7 +421,7 @@ func (cg *codeGenerator) generateServiceConstructor(svc *protogen.Service) {
 		cg.g.P(authMiddlewareVar, " := ", hapiRuntimePackage.Ident("AuthMiddleware"),
 			"(", handlerFacilitatorVar, ", ", hapiRuntimePackage.Ident("GetBearerTokenInHeader"), ", \n",
 			goIdentUnauthenticatedCode, ", \n",
-			cg.getResponseCodeDescGetterIdent(), "(", goIdentUnauthenticatedCode, "), \n",
+			*cg.getDescFromResponseCode(), ",\n",
 			responseWrapperVar, ")")
 		cg.g.P("_ = ", authMiddlewareVar)
 	default:

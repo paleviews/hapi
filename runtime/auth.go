@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"context"
 	"errors"
 	"net/http"
 )
@@ -21,13 +22,17 @@ func GetBearerTokenInHeader(req *http.Request) (string, error) {
 }
 
 func AuthMiddleware(
-	hf HandlerFacilitator, tokenGetter func(*http.Request) (string, error),
-	unauthenticatedCode ResponseCode, unauthenticatedDesc string, responseWrapper ResultCodeWrapper,
+	hf HandlerFacilitator,
+	tokenGetter func(*http.Request) (string, error),
+	unauthenticatedCode ResponseCode,
+	unauthenticatedDescGetter func(ctx context.Context, code ResponseCode) string,
+	responseWrapper ResultCodeWrapper,
 ) func(func(rw http.ResponseWriter, req *http.Request)) func(rw http.ResponseWriter, req *http.Request) {
 
 	return func(next func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
 		return func(rw http.ResponseWriter, req *http.Request) {
 			ctx := req.Context()
+			unauthenticatedDesc := unauthenticatedDescGetter(ctx, unauthenticatedCode)
 			token, err := tokenGetter(req)
 			if err != nil {
 				hf.ErrorHook(ctx, NewAPIError(unauthenticatedCode, unauthenticatedDesc, err))

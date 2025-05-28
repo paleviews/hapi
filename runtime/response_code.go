@@ -1,5 +1,7 @@
 package runtime
 
+import "context"
+
 type ResponseCode int32
 
 // Default response codes are used if no proto enum is annotated as type of response code.
@@ -25,6 +27,6 @@ func GetDescFromResponseCode(code ResponseCode) string {
 	}
 }
 
-func APIErrorFromResponseCode(code ResponseCode, src error) APIError {
+func APIErrorFromResponseCode(_ context.Context, code ResponseCode, src error) APIError {
 	return NewAPIError(code, GetDescFromResponseCode(code), src)
 }
