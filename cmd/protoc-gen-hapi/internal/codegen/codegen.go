@@ -179,8 +179,31 @@ func (cg *codeGenerator) generateEnum(e *protogen.Enum) {
 	cg.g.P("}")
 	cg.g.P()
 
-	cg.g.P("func ", cg.getAPIErrorFromResponseCodeIdent(), "(code ", e.GoIdent, ", src error) ",
-		hapiRuntimePackage.Ident("APIError"), " {")
+	cg.g.P("type ToError func(ctx ", contextPackage.Ident("Context"), ", code ", e.GoIdent, ", src error) ",
+		hapiRuntimePackage.Ident("APIError"))
+	cg.g.P()
+
+	cg.g.P("var (")
+	cg.g.P("apiErrorFromResponseCode ToError")
+	cg.g.P("setOnce ", syncPackage.Ident("Once"))
+	cg.g.P(")")
+	cg.g.P()
+
+	cg.g.P("func SetToErrorFunc(f ToError) {")
+	cg.g.P("if f == nil {")
+	cg.g.P("return")
+	cg.g.P("}")
+	cg.g.P("setOnce.Do(func() {")
+	cg.g.P("apiErrorFromResponseCode = f")
+	cg.g.P("})")
+	cg.g.P("}")
+	cg.g.P()
+
+	cg.g.P("func ", cg.getAPIErrorFromResponseCodeIdent(), "(ctx ", contextPackage.Ident("Context"),
+		", code ", e.GoIdent, ", src error) ", hapiRuntimePackage.Ident("APIError"), " {")
+	cg.g.P("if f := apiErrorFromResponseCode; f != nil {")
+	cg.g.P("return f(ctx, code, src)")
+	cg.g.P("}")
 	cg.g.P("return ", hapiRuntimePackage.Ident("NewAPIError"), "(code, ",
 		cg.getResponseCodeDescGetterIdent(), "(code), src)")
 	cg.g.P("}")
@@ -323,6 +346,7 @@ const (
 	fmtPackage         = protogen.GoImportPath("fmt")
 	ioPackage          = protogen.GoImportPath("io")
 	base64Package      = protogen.GoImportPath("encoding/base64")
+	syncPackage        = protogen.GoImportPath("sync")
 )
 
 func (cg *codeGenerator) generateSignature(m *protogen.Method) {
@@ -468,6 +492,7 @@ func (cg *codeGenerator) generateHandler(method *protogen.Method, rpcInfo *servi
 	cg.g.P("var hapiError1 ", hapiRuntimePackage.Ident("APIError"))
 	cg.g.P("if ok := ", errorsPackage.Ident("As"), "(err, &hapiError1); !ok {")
 	cg.g.P("hapiError1 = ", cg.getAPIErrorFromResponseCodeIdent(), "(")
+	cg.g.P("ctx,")
 	cg.g.P(goIdentServerErrorCode, ",")
 	cg.g.P(fmtPackage.Ident("Errorf"), `("logic error: %w", err),`)
 	cg.g.P(")")
@@ -640,6 +665,7 @@ func (cg *codeGenerator) generateInputAssembleStatements(method *protogen.Method
 			cg.g.P(inputVar, ", err := ", formDecoderVar, "(req)")
 			cg.g.P("if err != nil {")
 			cg.g.P("hapiError1 := ", cg.getAPIErrorFromResponseCodeIdent(), "(")
+			cg.g.P("ctx,")
 			cg.g.P(goIdentInvalidInputCode, ",")
 			cg.g.P(fmtPackage.Ident("Errorf"), `("decode form: %w", err),`)
 			cg.g.P(")")
@@ -650,6 +676,7 @@ func (cg *codeGenerator) generateInputAssembleStatements(method *protogen.Method
 			cg.g.P("bodyBytes, err := ", ioPackage.Ident("ReadAll"), "(req.Body)")
 			cg.g.P("if err != nil {")
 			cg.g.P("hapiError1 := ", cg.getAPIErrorFromResponseCodeIdent(), "(")
+			cg.g.P("ctx,")
 			cg.g.P(goIdentServerErrorCode, ",")
 			cg.g.P(fmtPackage.Ident("Errorf"), `("read request body: %w", err),`)
 			cg.g.P(")")
@@ -660,6 +687,7 @@ func (cg *codeGenerator) generateInputAssembleStatements(method *protogen.Method
 			cg.g.P("err = ", handlerFacilitatorVar, ".DecodeJSON(bodyBytes, &", inputVar, ")")
 			cg.g.P("if err != nil {")
 			cg.g.P("hapiError1 := ", cg.getAPIErrorFromResponseCodeIdent(), "(")
+			cg.g.P("ctx,")
 			cg.g.P(goIdentInvalidInputCode, ",")
 			cg.g.P(fmtPackage.Ident("Errorf"), `("decode json: %w", err),`)
 			cg.g.P(")")
@@ -687,6 +715,7 @@ func (cg *codeGenerator) generatePathParamStatements(rpcInfo *serviceregistry.RP
 		cg.g.P(strName, ` := `, handlerFacilitatorVar, `.GetPathParam(req, "`, param.PathParam, `")`)
 		cg.g.P("if ", strName, ` == "" {`)
 		cg.g.P("hapiError1 := ", cg.getAPIErrorFromResponseCodeIdent(), "(")
+		cg.g.P("ctx,")
 		cg.g.P(goIdentInvalidInputCode, ",")
 		cg.g.P(errorsPackage.Ident("New"), `("invalid `, param.PathParam, ` in path"),`)
 		cg.g.P(")")
@@ -726,6 +755,7 @@ func (cg *codeGenerator) generatePathParamStatements(rpcInfo *serviceregistry.RP
 			cg.g.P(parsedName, ", err := ", parser, "(", strName, ")")
 			cg.g.P("if err != nil {")
 			cg.g.P("hapiError1 := ", cg.getAPIErrorFromResponseCodeIdent(), "(")
+			cg.g.P("ctx,")
 			cg.g.P(goIdentInvalidInputCode, ",")
 			cg.g.P(fmtPackage.Ident("Errorf"), `("invalid `, param.PathParam, ` in path: %w", err),`)
 			cg.g.P(")")
