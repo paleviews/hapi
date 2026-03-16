@@ -466,11 +466,11 @@ func (tf *transformer) meshEnumParentDescription(parent description, enum *proto
 		valueDesc := tf.parseDescription(string(v.Comments.Leading))
 		switch len(valueDesc) {
 		case 0:
-			parent = append(parent, fmt.Sprintf("..... %d: %s", v.Desc.Number(), v.Desc.Name()))
+			parent = append(parent, fmt.Sprintf("..... %s", v.Desc.Name()))
 		case 1:
-			parent = append(parent, fmt.Sprintf("..... %d: %s | %s", v.Desc.Number(), v.Desc.Name(), valueDesc[0]))
+			parent = append(parent, fmt.Sprintf("..... %s: %s", v.Desc.Name(), valueDesc[0]))
 		default:
-			parent = append(parent, fmt.Sprintf("..... %d: %s", v.Desc.Number(), v.Desc.Name()))
+			parent = append(parent, fmt.Sprintf("..... %s", v.Desc.Name()))
 			for _, vv := range valueDesc {
 				parent = append(parent, fmt.Sprintf("....... %s", vv))
 			}

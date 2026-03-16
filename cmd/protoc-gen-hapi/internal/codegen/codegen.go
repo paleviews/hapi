@@ -2,6 +2,7 @@ package codegen
 
 import (
 	"fmt"
+	"strconv"
 
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -161,7 +162,7 @@ func (cg *codeGenerator) generateEnum(e *protogen.Enum) {
 	if isResponseCode {
 		cg.g.P(leadingComments, "type ", e.GoIdent, " = ", hapiRuntimePackage.Ident("ResponseCode"))
 	} else {
-		cg.g.P(leadingComments, "type ", e.GoIdent, " int32")
+		cg.g.P(leadingComments, "type ", e.GoIdent, " int8")
 	}
 	cg.g.P()
 	cg.g.P("const (")
@@ -173,6 +174,49 @@ func (cg *codeGenerator) generateEnum(e *protogen.Enum) {
 	cg.g.P(")")
 	cg.g.P()
 	if !isResponseCode {
+		// Enum value maps.
+		cg.g.P("// Enum value maps for ", e.GoIdent, ".")
+		cg.g.P("var (")
+		cg.g.P("name_of_"+e.GoIdent.GoName, " = map[", e.GoIdent, "]string{")
+		for _, value := range e.Values {
+			duplicate := ""
+			if value.Desc != e.Desc.Values().ByNumber(value.Desc.Number()) {
+				duplicate = "// Duplicate value: "
+			}
+			cg.g.P(duplicate, value.Desc.Number(), ": ", strconv.Quote(string(value.Desc.Name())), ",")
+		}
+		cg.g.P("}")
+		cg.g.P("value_of_"+e.GoIdent.GoName, " = map[string]", e.GoIdent, "{")
+		for _, value := range e.Values {
+			cg.g.P(strconv.Quote(string(value.Desc.Name())), ": ", value.Desc.Number(), ",")
+		}
+		cg.g.P("}")
+		cg.g.P(")")
+		cg.g.P()
+		// String()
+		cg.g.P("func (x *", e.GoIdent.GoName, ") String() string {")
+		cg.g.P("s, ok := name_of_"+e.GoIdent.GoName, "[*x]")
+		cg.g.P("if !ok {")
+		cg.g.P("return ", fmtPackage.Ident("Sprintf"), "(`\"%d\"`, *x)")
+		cg.g.P("}")
+		cg.g.P("return ", fmtPackage.Ident("Sprintf"), "(`\"%s\"`, s)")
+		cg.g.P("}")
+		cg.g.P()
+		// JSON marshaller
+		cg.g.P("func (x *", e.GoIdent.GoName, ") MarshalJSON() ([]byte, error) {")
+		cg.g.P("return []byte(x.String()), nil")
+		cg.g.P("}")
+		cg.g.P()
+		cg.g.P("func (x *", e.GoIdent.GoName, ") UnmarshalJSON(data []byte) error {")
+		cg.g.P("s := string(data)")
+		cg.g.P("i, ok := value_of_"+e.GoIdent.GoName, "[s]")
+		cg.g.P("if !ok {")
+		cg.g.P("return ", fmtPackage.Ident("Errorf"), "(\"invalid enum %s of type ", e.GoIdent.GoName, "\", s)")
+		cg.g.P("}")
+		cg.g.P("*x = i")
+		cg.g.P("return nil")
+		cg.g.P("}")
+		cg.g.P()
 		return
 	}
 

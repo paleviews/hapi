@@ -362,23 +362,21 @@ func (enum) isType() {}
 func (enum) isScalar() {}
 
 func (e enum) print(p *printer.Printer) {
-	p.PrintlnWithIndents("type: integer")
-	p.PrintlnWithIndents("format: int32")
+	p.PrintlnWithIndents("type: string")
 	p.PrintlnWithIndents("enum:")
 	p.IncreaseIndentLevel()
 	defer p.DecreaseIndentLevel()
 	for _, v := range e {
 		switch len(v.description) {
 		case 0:
-			p.PrintlnWithIndents(fmt.Sprintf("- %d # %s", v.value, v.name))
+			p.PrintlnWithIndents(fmt.Sprintf("- %s", v.name))
 		case 1:
-			p.PrintlnWithIndents(fmt.Sprintf("- %d # %s: %s", v.value, v.name, v.description[0]))
+			p.PrintlnWithIndents(fmt.Sprintf("- %s # %s", v.name, v.description[0]))
 		default:
-			p.PrintlnWithIndents(fmt.Sprintf("# %s:", v.name))
 			for _, vv := range v.description {
-				p.PrintlnWithIndents(fmt.Sprintf("#   %s", vv))
+				p.PrintlnWithIndents(fmt.Sprintf("# %s", vv))
 			}
-			p.PrintlnWithIndents(fmt.Sprintf("- %d", v.value))
+			p.PrintlnWithIndents(fmt.Sprintf("- %s", v.name))
 		}
 	}
 }
