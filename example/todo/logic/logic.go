@@ -57,10 +57,11 @@ func (t *Todo) Create(_ context.Context, req *todo.CreateRequest) (*todo.CreateR
 	}, nil
 }
 
-func (t *Todo) Get(_ context.Context, req *todo.GetRequest) (*todo.Todo, error) {
+func (t *Todo) Get(ctx context.Context, req *todo.GetRequest) (*todo.Todo, error) {
 	td, ok := t.get(req.ID)
 	if !ok {
 		return nil, codes.APIErrorFromResponseCode(
+			ctx,
 			codes.ResponseCode_RESPONSE_CODE_NOT_FOUND,
 			fmt.Errorf("todo by id %d not found", req.ID),
 		)
@@ -114,9 +115,10 @@ func (t *Todo) List(_ context.Context, req *todo.ListRequest) (*todo.ListRespons
 	}, nil
 }
 
-func (t *Todo) Update(_ context.Context, req *todo.Todo) (*common.Empty, error) {
+func (t *Todo) Update(ctx context.Context, req *todo.Todo) (*common.Empty, error) {
 	if _, ok := t.todoByID[req.ID]; !ok {
 		return nil, codes.APIErrorFromResponseCode(
+			ctx,
 			codes.ResponseCode_RESPONSE_CODE_NOT_FOUND,
 			fmt.Errorf("todo id %d not found", req.ID),
 		)
@@ -125,10 +127,11 @@ func (t *Todo) Update(_ context.Context, req *todo.Todo) (*common.Empty, error) 
 	return &common.Empty{}, nil
 }
 
-func (t *Todo) Delete(_ context.Context, req *todo.DeleteRequest) (*common.Empty, error) {
+func (t *Todo) Delete(ctx context.Context, req *todo.DeleteRequest) (*common.Empty, error) {
 	td, ok := t.get(req.ID)
 	if !ok {
 		return nil, codes.APIErrorFromResponseCode(
+			ctx,
 			codes.ResponseCode_RESPONSE_CODE_NOT_FOUND,
 			fmt.Errorf("todo id %d not found", req.ID),
 		)

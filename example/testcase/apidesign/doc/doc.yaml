@@ -99,26 +99,24 @@ paths:
                       . testcase.DeepQueryResponse.Direction:\
                       ... enum out\
                       ... enums:\
-                      ..... 0: DIRECTION_UNKNOWN | one line enum\
-                      ..... 1: EAST\
-                      ..... 2: WEST\
-                      ..... 3: SOUTH\
+                      ..... DIRECTION_UNKNOWN: one line enum\
+                      ..... EAST\
+                      ..... WEST\
+                      ..... SOUTH\
                       ....... multiple lines 1\
                       ....... multiple lines 2\
                       ....... multiple lines 3\
-                      ..... 4: NORTH
-                    type: integer
-                    format: int32
+                      ..... NORTH
+                    type: string
                     enum:
-                      - 0 # DIRECTION_UNKNOWN: one line enum
-                      - 1 # EAST
-                      - 2 # WEST
-                      # SOUTH:
-                      #   multiple lines 1
-                      #   multiple lines 2
-                      #   multiple lines 3
-                      - 3
-                      - 4 # NORTH
+                      - DIRECTION_UNKNOWN # one line enum
+                      - EAST
+                      - WEST
+                      # multiple lines 1
+                      # multiple lines 2
+                      # multiple lines 3
+                      - SOUTH
+                      - NORTH
     delete:
       operationId: testcase.V1.FormDecode
       security:
@@ -128,18 +126,17 @@ paths:
           description: |
             . testcase.FormDecodeRequest.UUID:\
             ... enums:\
-            ..... 0: UUID_SHORT\
-            ..... 1: UUID_MEDIUM\
-            ..... 2: UUID_LONG
+            ..... UUID_SHORT\
+            ..... UUID_MEDIUM\
+            ..... UUID_LONG
           required: true
           in: path
           schema:
-            type: integer
-            format: int32
+            type: string
             enum:
-              - 0 # UUID_SHORT
-              - 1 # UUID_MEDIUM
-              - 2 # UUID_LONG
+              - UUID_SHORT
+              - UUID_MEDIUM
+              - UUID_LONG
         - name: bool_field
           in: query
           schema:
@@ -187,17 +184,16 @@ paths:
           description: |
             . testcase.FormDecodeRequest.UUID:\
             ... enums:\
-            ..... 0: UUID_SHORT\
-            ..... 1: UUID_MEDIUM\
-            ..... 2: UUID_LONG
+            ..... UUID_SHORT\
+            ..... UUID_MEDIUM\
+            ..... UUID_LONG
           in: query
           schema:
-            type: integer
-            format: int32
+            type: string
             enum:
-              - 0 # UUID_SHORT
-              - 1 # UUID_MEDIUM
-              - 2 # UUID_LONG
+              - UUID_SHORT
+              - UUID_MEDIUM
+              - UUID_LONG
         - name: message_field
           in: query
           content:
@@ -286,19 +282,18 @@ paths:
           description: |
             . testcase.FormDecodeRequest.UUID:\
             ... enums:\
-            ..... 0: UUID_SHORT\
-            ..... 1: UUID_MEDIUM\
-            ..... 2: UUID_LONG
+            ..... UUID_SHORT\
+            ..... UUID_MEDIUM\
+            ..... UUID_LONG
           in: query
           schema:
             type: array
             items:
-              type: integer
-              format: int32
+              type: string
               enum:
-                - 0 # UUID_SHORT
-                - 1 # UUID_MEDIUM
-                - 2 # UUID_LONG
+                - UUID_SHORT
+                - UUID_MEDIUM
+                - UUID_LONG
         - name: message_array
           in: query
           schema:
