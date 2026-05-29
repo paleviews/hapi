@@ -1,6 +1,6 @@
 module github.com/paleviews/hapi/example/testcase
 
-go 1.15
+go 1.25
 
 require github.com/paleviews/hapi v0.1.0
 
