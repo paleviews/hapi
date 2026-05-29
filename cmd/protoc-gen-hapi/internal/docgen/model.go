@@ -2,10 +2,33 @@ package docgen
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/paleviews/hapi/cmd/protoc-gen-hapi/internal/printer"
 	"github.com/paleviews/hapi/cmd/protoc-gen-hapi/internal/serviceregistry"
 )
+
+func printlnUserStringWithIndents(p *printer.Printer, head, value string) {
+	isMultipleLines := func(value string) bool {
+		if strings.Contains(value, ": ") {
+			return true
+		}
+		for _, c := range []byte(value) {
+			if c < '0' || c > '9' {
+				return false
+			}
+		}
+		return true
+	}
+	if !isMultipleLines(value) {
+		p.PrintlnWithIndents(head, value)
+		return
+	}
+	p.PrintlnWithIndents(head, "|")
+	p.IncreaseIndentLevel()
+	p.PrintlnWithIndents(value)
+	p.DecreaseIndentLevel()
+}
 
 type docInfo struct {
 	version string
@@ -28,14 +51,14 @@ func (d *document) print(p *printer.Printer) {
 	p.PrintlnWithIndents(`openapi: "3.0.3"`)
 	p.PrintlnWithIndents("info:")
 	p.IncreaseIndentLevel()
-	p.PrintlnWithIndents("version: ", d.info.version)
-	p.PrintlnWithIndents("title: ", d.info.title)
+	printlnUserStringWithIndents(p, "version: ", d.info.version)
+	printlnUserStringWithIndents(p, "title: ", d.info.title)
 	p.DecreaseIndentLevel()
 	if len(d.servers) > 0 {
 		p.PrintlnWithIndents("servers:")
 		p.IncreaseIndentLevel()
 		for _, v := range d.servers {
-			p.PrintlnWithIndents("- url: ", v.url)
+			printlnUserStringWithIndents(p, "- url: ", v.url)
 		}
 		p.DecreaseIndentLevel()
 	}
@@ -181,7 +204,7 @@ func (d description) print(p *printer.Printer) {
 	switch n := len(d); n {
 	case 0:
 	case 1:
-		p.PrintlnWithIndents("description: ", d[0])
+		printlnUserStringWithIndents(p, "description: ", d[0])
 	default:
 		p.PrintlnWithIndents("description: |")
 		p.IncreaseIndentLevel()

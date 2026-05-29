@@ -7,7 +7,7 @@ servers:
 paths:
   /testcase/v1/{uuid}:
     get:
-      description: DeepQuery rpc comment
+      description: "DeepQuery rpc comment"
       operationId: testcase.V1.DeepQuery
       security:
         - bearerInHeader: []
@@ -28,7 +28,8 @@ paths:
                   type: integer
                   format: int64
         - name: string_to_obj
-          description: string_to_obj field comment on map
+          description: |
+            string_to_obj: field comment on map
           in: query
           content:
             application/json; charset=utf-8:
@@ -118,6 +119,8 @@ paths:
                       - SOUTH
                       - NORTH
     delete:
+      description: |
+        198
       operationId: testcase.V1.FormDecode
       security:
         - bearerInHeader: []
@@ -375,7 +378,8 @@ components:
             type: integer
             format: int64
         string_to_obj:
-          description: string_to_obj field comment on map
+          description: |
+            string_to_obj: field comment on map
           type: object
           additionalProperties:
             $ref: '#/components/schemas/testcase.DeepQueryRequest.Obj'

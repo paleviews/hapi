@@ -10,13 +10,14 @@ import "hapi/annotations/annotations.proto";
 
 // V1 service comment
 service V1 {
-  // DeepQuery rpc comment
+  // "DeepQuery rpc comment"
   rpc DeepQuery(DeepQueryRequest) returns (DeepQueryResponse) {
     option (hapi.annotations.method) = {
       get: "/testcase/v1/{uuid}";
     };
   }
 
+  // 198
   rpc FormDecode(FormDecodeRequest) returns (common.Empty) {
     option (hapi.annotations.method) = {
       delete: "/testcase/v1/{uuid}";
@@ -35,7 +36,7 @@ message DeepQueryRequest {
   // uuid field comment
   string uuid = 1;
   map<string, int64> string_to_int64 = 2;
-  // string_to_obj field comment on map
+  // string_to_obj: field comment on map
   map<string, Obj> string_to_obj = 3;
   repeated Obj objs_array = 4;
   Obj obj = 5;
