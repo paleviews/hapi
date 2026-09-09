@@ -75,4 +75,5 @@ extend google.protobuf.EnumValueOptions {
 
 extend google.protobuf.FieldOptions {
   bool method_extension_response_codes = 43713190;
+  bool no_go_omitempty_tag = 10679595;
 }

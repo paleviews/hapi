@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"google.golang.org/protobuf/compiler/protogen"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 
@@ -267,8 +268,12 @@ func (cg *codeGenerator) generateMessageField(f *protogen.Field) {
 	goType := cg.fieldGoType(f)
 	leadingComments := cg.appendDeprecationSuffix(f.Comments.Leading,
 		f.Desc.Options().(*descriptorpb.FieldOptions).GetDeprecated())
-	cg.g.P(leadingComments, f.GoName, " ", goType,
-		" `json:\"", f.Desc.Name(), ",omitempty\"`")
+	jsonTag := "json:\"" + f.Desc.Name()
+	if !proto.GetExtension(f.Desc.Options(), annotations.E_NoGoOmitemptyTag).(bool) {
+		jsonTag += ",omitempty"
+	}
+	jsonTag += "\""
+	cg.g.P(leadingComments, f.GoName, " ", goType, " `", jsonTag, "`")
 }
 
 func (cg *codeGenerator) generateFieldGetter(f *protogen.Field) {
